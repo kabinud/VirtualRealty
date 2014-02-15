@@ -51,10 +51,10 @@
     {
         _currentField = -1;
         NSString *login  = [[NSBundle mainBundle]pathForResource:@"login" ofType:@"plist"];
-        _loginArray      = [NSArray arrayWithContentsOfFile:login];
+        _loginArray      = [[NSArray arrayWithContentsOfFile:login] mutableCopy];
         
         NSString *signup = [[NSBundle mainBundle]pathForResource:@"signup" ofType:@"plist"];
-        _signupArray     = [NSArray arrayWithContentsOfFile:signup];
+        _signupArray     = [[NSArray arrayWithContentsOfFile:signup] mutableCopy];
         
         _state = kLogin;
     }
@@ -438,6 +438,7 @@
         return;
     }
     
+    
     if( [self validateForm] )
     {
         
@@ -446,6 +447,8 @@
         {
             case kLogin:
             {
+                [Flurry logEvent:@"LoginViewController - login touch"];
+                
                 [self.view addSubview:self.loadingView];
                 [self.loadingView show];
                 [[User sharedUser]loginWithUsername:self.username andPassword:self.password andBlock:^(BOOL success) {
@@ -465,6 +468,8 @@
             
             case kSignup:
             {
+                [Flurry logEvent:@"LoginViewController - signup touch"];
+                
                 [self.view addSubview:self.loadingView];
                 [self.loadingView show];
                 
@@ -534,6 +539,7 @@
     
             _state = kSignup;
             _currentIndexPath = nil;
+            [Flurry logEvent:@"LoginViewController - show signup"];
             break;
             
         case kSignup:
@@ -544,6 +550,7 @@
 
             _state = kLogin;
             _currentIndexPath = nil;
+            [Flurry logEvent:@"LoginViewController - show login"];
             break;
     }
     
@@ -555,6 +562,8 @@
     
     [_loginTabel reloadData];
     [_signupTabel reloadData];
+    
+    
 }
 
 -(void)facebookLogin

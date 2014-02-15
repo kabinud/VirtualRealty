@@ -97,7 +97,7 @@
         {
             if( [obj respondsToSelector:@selector(locationFailed ) ] )
             {
-                [obj locationFailed];
+            [obj locationFailed];
             }
         }
     }

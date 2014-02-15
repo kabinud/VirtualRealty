@@ -36,6 +36,7 @@
 +(BOOL)isValidPassword:(NSString *)checkString;
 +(UIImage *)getIconForBusinessTypes:(NSArray *)value;
 +(UIImage *)getImagefromVideoURL:(NSURL *)url;
++(NSNumber *)getDurationOfMedia:(NSURL *)url;
 +(void)printFontFamilies;
 +(UIImage *)copyImage:(UIImage *)img ToSize:(CGSize)size;
 @end

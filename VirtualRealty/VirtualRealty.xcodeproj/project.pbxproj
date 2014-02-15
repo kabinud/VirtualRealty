@@ -119,6 +119,7 @@
 		164E9167181619080010CC8B /* UserListingCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 164E9166181619080010CC8B /* UserListingCell.m */; };
 		165C5B831815F40C00C294C7 /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 836DF2E217E4B7B2002BD42E /* Utils.m */; };
 		16621CBC18A6E3ED00DDCD87 /* DatePickerSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 16621CBB18A6E3ED00DDCD87 /* DatePickerSource.m */; };
+		16621CC018AFBD7B00DDCD87 /* libFlurry_4.3.2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16621CBF18AFBD7B00DDCD87 /* libFlurry_4.3.2.a */; };
 		16B9E4501879E26200BEE9A9 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 16B9E44E1879E26200BEE9A9 /* Default@2x.png */; };
 		16B9E4521879E34F00BEE9A9 /* Default-586@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 16B9E4511879E34F00BEE9A9 /* Default-586@2x.png */; };
 		16B9E455187A165000BEE9A9 /* ListingStateView.m in Sources */ = {isa = PBXBuildFile; fileRef = 16B9E454187A165000BEE9A9 /* ListingStateView.m */; };
@@ -387,6 +388,8 @@
 		164E9166181619080010CC8B /* UserListingCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UserListingCell.m; path = Cells/UserListingCell.m; sourceTree = "<group>"; };
 		16621CBA18A6E3ED00DDCD87 /* DatePickerSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DatePickerSource.h; path = Data/DatePickerSource.h; sourceTree = "<group>"; };
 		16621CBB18A6E3ED00DDCD87 /* DatePickerSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DatePickerSource.m; path = Data/DatePickerSource.m; sourceTree = "<group>"; };
+		16621CBE18AFBD7B00DDCD87 /* Flurry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Flurry.h; sourceTree = "<group>"; };
+		16621CBF18AFBD7B00DDCD87 /* libFlurry_4.3.2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libFlurry_4.3.2.a; sourceTree = "<group>"; };
 		16B9E44E1879E26200BEE9A9 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "VirtualRealty/Default@2x.png"; sourceTree = "<group>"; };
 		16B9E4511879E34F00BEE9A9 /* Default-586@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-586@2x.png"; path = "VirtualRealty/Default-586@2x.png"; sourceTree = "<group>"; };
 		16B9E453187A165000BEE9A9 /* ListingStateView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ListingStateView.h; path = Custom/ListingStateView.h; sourceTree = "<group>"; };
@@ -580,6 +583,7 @@
 			files = (
 				16E7ADA717FCF86B000C2D74 /* AVFoundation.framework in Frameworks */,
 				16435358183D9D9000B3DBBA /* MessageUI.framework in Frameworks */,
+				16621CC018AFBD7B00DDCD87 /* libFlurry_4.3.2.a in Frameworks */,
 				1643534A1839231F00B3DBBA /* CoreData.framework in Frameworks */,
 				1643534B1839231F00B3DBBA /* CoreText.framework in Frameworks */,
 				1643534C1839231F00B3DBBA /* GLKit.framework in Frameworks */,
@@ -739,6 +743,15 @@
 				16B9E47E187BAB4400BEE9A9 /* CustomField.m */,
 			);
 			name = Custom;
+			sourceTree = "<group>";
+		};
+		16621CBD18AFBD7B00DDCD87 /* Flurry */ = {
+			isa = PBXGroup;
+			children = (
+				16621CBE18AFBD7B00DDCD87 /* Flurry.h */,
+				16621CBF18AFBD7B00DDCD87 /* libFlurry_4.3.2.a */,
+			);
+			path = Flurry;
 			sourceTree = "<group>";
 		};
 		16B9E463187B93E000BEE9A9 /* fonts */ = {
@@ -1187,6 +1200,7 @@
 		83ABFE4F17E4B9DB007ECB53 /* Libs */ = {
 			isa = PBXGroup;
 			children = (
+				16621CBD18AFBD7B00DDCD87 /* Flurry */,
 				16435341183922A400B3DBBA /* GoogleMaps.bundle */,
 				1643533D1839223600B3DBBA /* GoogleMaps.framework */,
 				16E7AD9D17FA4FE6000C2D74 /* FacebookSDK.framework */,
@@ -1659,6 +1673,10 @@
 				GCC_PREFIX_HEADER = "VirtualRealty/VirtualRealty-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS = "";
 				INFOPLIST_FILE = "VirtualRealty/VirtualRealty-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/Projects/VirtualRealty/VirtualRealty/VirtualRealty/Libs/Flurry,
+				);
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
@@ -1687,6 +1705,10 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "RELEASE=2";
 				GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS = "";
 				INFOPLIST_FILE = "VirtualRealty/VirtualRealty-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/Projects/VirtualRealty/VirtualRealty/VirtualRealty/Libs/Flurry,
+				);
 				"OTHER_LDFLAGS[arch=*]" = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";

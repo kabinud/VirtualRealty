@@ -16,6 +16,7 @@
 @interface AddApartmentViewController : AbstractViewController<UITableViewDataSource, UITableViewDelegate, FormCellDelegate, KeyboardManagerDelegate, PickerManagerDelegate>
 {
     BOOL editMode;
+    BOOL userNeedsLocation;
 }
 
 @property(nonatomic, strong, readonly)Listing        *listing;

@@ -479,6 +479,37 @@
     }];
 }
 
+-(BOOL)userEditing
+{
+    BOOL editing = NO;
+    
+    unsigned int propertyCount = 0;
+    objc_property_t * properties = class_copyPropertyList([self class], &propertyCount);
+    
+    NSArray *ommissionList = @[@"errors", @"geo", @"thumb", @"submitterID",@"submitterObjectId",@"email" @"saveCompleteBlock", @"video", @"videoURL", @"keywords", @"videoFrame", @"localAssetPath", @"localVideoURL"];
+    NSString *key = nil;
+    
+    for (unsigned int i = 0; i < propertyCount; ++i)
+    {
+        objc_property_t property = properties[i];
+        const char * name = property_getName(property);
+        
+        key = [NSString stringWithUTF8String:name];
+        
+        if( [ommissionList containsObject:key] == NO )
+        {
+            if( [self valueForKey:key] != nil )
+            {
+                NSLog(@"%@ has value for key %@ ", self, key);
+                editing = YES;
+                break;
+            }
+        }
+    }
+    
+    return editing;
+}
+
 
 
 @end

@@ -121,7 +121,7 @@
 
         case kUserDeniedLocationServices :
             title       = NSLocalizedString(@"Sorry", @"Error : Generic sorry");
-            message     = NSLocalizedString(@"You have disabled location services for this app, please go to the Settings App -> Privacey -> Locations Services and enable it for VirtualRealty", @"Error : User killed location services");
+            message     = NSLocalizedString(@"You have disabled location services for this app, please go to the Settings App -> Privacy -> Locations Services and enable it for VirtualRealty", @"Error : User killed location services");
             cancelTitle = NSLocalizedString(@"OK", @"Genereic : Cancel ");
             break;
         case kGPSFailed :

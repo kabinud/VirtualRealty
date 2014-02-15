@@ -40,6 +40,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [Flurry logEvent:@"NearMeViewController - viewDidLoad"];
+    
     self.navigationItem.title = @"Near Me";
     CGRect rect = self.view.bounds;
     rect.size.height -= self.navigationController.navigationBar.frame.size.height;
@@ -224,7 +226,7 @@
                               @"latt":[NSNumber numberWithDouble:loc.coordinate.latitude],
                               @"distance":[NSNumber numberWithFloat:self.distance]
                             };
-    
+    [Flurry logEvent:@"NearMeViewController - handleUpdate" withParameters:params];
     [PFCloud callFunctionInBackground:@"nearMe" withParameters:params block:^(id object, NSError *error)
     {
          [blockself handleDataLoaded:object];

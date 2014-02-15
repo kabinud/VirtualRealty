@@ -67,6 +67,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [Flurry logEvent:@"Search - viewDidLoad"];
+    
     self.view.backgroundColor = [UIColor colorFromHex:@"cbd5d9"];
     
     _searchBar = [[UISearchBar alloc]init];
@@ -132,9 +135,13 @@
             if( error )
             {
                 [[ErrorFactory getAlertForType:kServerError andDelegateOrNil:nil andOtherButtons:nil]show];
+                [Flurry logEvent:@"Search - allListings failed"];
             }
+            
             else
             {
+                [Flurry logEvent:@"Search - allListings loaded"];
+                
                 [refreshControl endRefreshing];
                 [blockself handleDataLoaded:object];
             }
@@ -142,7 +149,6 @@
         }];
     }
 }
-
 
 -(void)viewDidAppear:(BOOL)animated
 {
@@ -200,6 +206,8 @@
                                  @"keyword":self.searchBar.text
                                  };
         
+        [Flurry logEvent:@"Search" withParameters:params];
+        
         [PFCloud callFunctionInBackground:@"search" withParameters:params block:^(id object, NSError *error)
         {
             if( error )
@@ -222,6 +230,8 @@
 #pragma mark - ui refresh
 -(void)handleRefresh:(id)sender
 {
+    
+    [Flurry logEvent:@"Search - pull to refresh "];
     
     __block AppDelegate *app = (AppDelegate *)[UIApplication sharedApplication].delegate;
     [self.searchBar resignFirstResponder];
@@ -250,11 +260,14 @@
                  {
                      [blockRefresh endRefreshing];
                      [[ErrorFactory getAlertForType:kServerError andDelegateOrNil:nil andOtherButtons:nil]show];
+                     [Flurry logEvent:@"Search - all listings failed"];
+
                  }
                  else
                  {
                      [blockRefresh endRefreshing];
                      [blockself handleDataLoaded:object];
+                     [Flurry logEvent:@"Search - all listings loaded"];
                  }
                  [app hideLoader];
              }];
@@ -284,6 +297,8 @@
     if( data.count == 0 )
     {
         [[ErrorFactory getAlertForType:kNoResultsError andDelegateOrNil:nil andOtherButtons:nil]show];
+        [Flurry logEvent:@"Search - listings loaded no results"];
+        
         return;
     }
     
@@ -304,11 +319,14 @@
     CustomNavViewController *nc = [[CustomNavViewController alloc ]initWithRootViewController:filters];
     filters.navigationItem.title = ([self.searchBar.text isEqualToString:@""]) ?  @"Filters" : [NSString stringWithFormat:@"Filters For %@", self.searchBar.text];
     [self presentViewController:nc animated:YES completion:nil];
+    [Flurry logEvent:@"Search - make search filters"];
+    
 }
 
 
 -(void)showDetails:(Listing *)listing
 {
+    [Flurry logEvent:@"Search - show listing details"];
     ListingDetailViewController *detailsVC = [[ListingDetailViewController alloc]initWithListing:listing];
     [self.navigationController pushViewController:detailsVC animated:YES];
 }
@@ -388,14 +406,19 @@
                 temp[@"keyword"] = self.searchBar.text;
             }
             
+            [Flurry logEvent:@"Search - filters done" withParameters:temp ];
+            
             [PFCloud callFunctionInBackground:@"search" withParameters:temp block:^(id object, NSError *error)
             {
                 if( error == nil )
                 {
+                    [Flurry logEvent:@"Search - search loaded"];
                     [blockself handleDataLoaded:object];
                 }
                 else
                 {
+                    [Flurry logEvent:@"Search - search failed"];
+                    
                     [[ErrorFactory getAlertForType:kServerError andDelegateOrNil:nil andOtherButtons:nil]show];
                 }
                 [blockrefresh endRefreshing];
@@ -406,14 +429,17 @@
     }
     else
     {
+        [Flurry logEvent:@"Search - filters done" withParameters:params ];
         [PFCloud callFunctionInBackground:@"search" withParameters:params block:^(id object, NSError *error)
         {
             if( error )
             {
+                [Flurry logEvent:@"Search - search failed"];
                 [[ErrorFactory getAlertForType:kServerError andDelegateOrNil:nil andOtherButtons:nil]show];
             }
             else
             {
+                [Flurry logEvent:@"Search - search loaded"];
                 [blockself handleDataLoaded:object];
             }
             [blockrefresh endRefreshing];
@@ -436,14 +462,19 @@
     
     [app showLoaderInView:self.view];
     __block SearchViewController *blockself = self;
+    
+    [Flurry logEvent:@"Search - clear filters"];
     [PFCloud  callFunctionInBackground:@"allListings" withParameters:[NSDictionary dictionary] block:^(id object, NSError *error)
     {
         if( error == nil )
         {
+            [Flurry logEvent:@"Search - all listings loaded"];
             [blockself handleDataLoaded:object];
         }
         else
         {
+            [Flurry logEvent:@"Search - all listings failed"];
+            
             [[ErrorFactory getAlertForType:kServerError andDelegateOrNil:nil andOtherButtons:nil]show];
         }
         [app hideLoader];
@@ -584,6 +615,7 @@
 #pragma mark - map view 
 -(BOOL)mapView:(GMSMapView *)mapView didTapMarker:(GMSMarker *)marker
 {
+    [Flurry logEvent:@"Search - map marker touched" ];
     if( self.details )
     {
 

@@ -25,6 +25,25 @@
     return self;
 }
 
+-(BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+    if( self.cellinfo[@"max-chars"] )
+    {
+        int maxChars = [self.cellinfo[@"max-chars"] intValue];
+        
+        if( [string isEqualToString:@""] )
+        {
+            return YES;
+        }
+        
+        if( textField.text.length == maxChars )
+        {
+            return NO;
+        }
+    }
+    
+    return YES;
+}
 
 -(void)layoutSubviews
 {

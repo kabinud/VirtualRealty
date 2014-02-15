@@ -58,7 +58,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+    [Flurry logEvent:@"ListingDetailViewController - viewDidLoad"];
     self.view.backgroundColor = [UIColor grayColor];
     self.navigationItem.title = @"Listing";
     CGRect rect = self.view.bounds;
@@ -403,6 +403,9 @@
 {
     __block ListingDetailViewController *blockself = self;
     NSDictionary *params = @{@"objectId":self.listing.objectId};
+    
+    [Flurry logEvent:@"ListingDetailViewController - deleteObject"];
+    
     [PFCloud callFunctionInBackground:@"deleteListing" withParameters:params block:^(id object, NSError *error)
     {
         if( [object intValue ] == 1 )
@@ -427,6 +430,9 @@
         return;
     }
     __block ListingDetailViewController *blockself = self;
+    
+    [Flurry logEvent:@"ListingDetailViewController"];
+    
     
     [self.listing loadVideo:^(BOOL success) {
         if( success )
@@ -469,6 +475,9 @@
         [vc setToRecipients:@[self.listing.email]];
         [vc setSubject:[NSString stringWithFormat:@"VirtualRealty Listing Inquiry - %@" ,self.listing.objectId] ];
         [self presentViewController:vc animated:YES completion:nil];
+        
+        [Flurry logEvent:@"ListingDetailViewController - showEmail"];
+        
     }
     else
     {
@@ -484,6 +493,7 @@
 
 -(void)handleCall
 {
+    [Flurry logEvent:@"ListingDetailViewController - handleCall"];
     if( self.listing.phone )
     {
         NSString *phoneNumber = [@"telprompt://" stringByAppendingString:self.listing.phone];

@@ -21,9 +21,6 @@
 +(BuildEnvironment)getCurrentBuildEnvironment
 {
     static NSString *debugFlag         = @"Debug";
-    static NSString *debugNoServerFlag = @"DebugNoServer";
-    static NSString *adhocDev          = @"AdHocDev";
-    static NSString *adhocQA           = @"AdHocQa";
     static NSString *releaseFlag       = @"Release";
 
     int environment = 0;
@@ -35,21 +32,7 @@
         environment = kDebug;
     }
     
-    if( [current isEqualToString:debugNoServerFlag])
-    {
-        environment = kDebugNoServer;
-    }
-    
-    if( [current isEqualToString:adhocDev])
-    {
-        environment = kAdHocDev;
-    }
-    
-    if( [current isEqualToString:adhocQA])
-    {
-        environment = kAdHocQA;
-    }
-    
+
     if( [current isEqualToString:releaseFlag])
     {
         environment = kRelease;
@@ -185,6 +168,14 @@
     return image;
 }
 
++(NSNumber *)getDurationOfMedia:(NSURL *)url
+{
+    AVURLAsset *asset1 = [[AVURLAsset alloc] initWithURL:url options:nil];
+
+    return [NSNumber numberWithFloat:asset1.duration.value/asset1.duration.timescale];
+}
+
+
 + (void)convertVideoToLowQualityWithInputURL:(NSURL*)inputURL outputURL:(NSURL*)outputURL successHandler:(void (^)())successHandler failureHandler:(void (^)(NSError *))failureHandler
 {
     AVURLAsset *asset = [AVURLAsset URLAssetWithURL:inputURL options:nil];
@@ -207,13 +198,13 @@
 
 +(void)printFontFamilies
 {
+
+    return;
     for (NSString* family in [UIFont familyNames])
     {
-        NSLog(@"<Utils> printFontFamilies - family : %@", family);
         
         for (NSString* name in [UIFont fontNamesForFamilyName: family])
         {
-            NSLog(@"<Utils> printFontFamilies - name %@", name);
         }
     }
 }

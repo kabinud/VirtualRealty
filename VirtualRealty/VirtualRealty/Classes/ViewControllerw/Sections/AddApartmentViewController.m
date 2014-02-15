@@ -81,7 +81,9 @@
 
 - (void)viewDidLoad
 {
+    [Flurry logEvent:@"AddAppartmentViewController - viewDidLoad"];
     [super viewDidLoad];
+    userNeedsLocation = YES;
     self.view.backgroundColor = [UIColor grayColor];
     CGRect rect = self.view.bounds;
     rect.size.height -= self.navigationController.navigationBar.frame.size.height;
@@ -125,26 +127,25 @@
 
 -(void)viewDidAppear:(BOOL)animated
 {
-    if( _currentIndexpath == nil )
+
+    [super viewDidAppear:animated];
+    
+    if(  [ReachabilityManager sharedManager].currentStatus == NotReachable )
     {
-        [super viewDidAppear:animated];
-        
-        if(  [ReachabilityManager sharedManager].currentStatus == NotReachable )
-        {
-            [[ReachabilityManager sharedManager]showAlert];
-            return;
-        }
-        
-        [[KeyboardManager sharedManager]registerDelegate:self];
-        [[PickerManager sharedManager]registerDelegate:self];
-        
-        if( self.listing.neighborhood == nil )
-        {
-            [self getLocation];
-            AppDelegate *app = (AppDelegate *)[UIApplication sharedApplication].delegate;
-            [app showLoaderInView:self.view];
-        }
+        [[ReachabilityManager sharedManager]showAlert];
+        return;
     }
+    
+    [[KeyboardManager sharedManager]registerDelegate:self];
+    [[PickerManager sharedManager]registerDelegate:self];
+
+    if( userNeedsLocation )
+    {
+        [self getLocation];
+        AppDelegate *app = (AppDelegate *)[UIApplication sharedApplication].delegate;
+        [app showLoaderInView:self.view];
+    }
+    
 }
 
 -(void)viewDidDisappear:(BOOL)animated
@@ -237,7 +238,8 @@
             
             [self.table reloadData];
             break;
-}
+    }
+    userNeedsLocation = NO;
 }
 
 #pragma mark - table delegate and data
@@ -772,6 +774,8 @@
                 else
                 {
                     [[ErrorFactory getAlertForType:kUserAddressNotSupported andDelegateOrNil:nil andOtherButtons:nil] show];
+                    [Flurry logEvent:@"AddAppartmentViewController - geo failed"];
+                    
                 }
             }];
         }
@@ -812,6 +816,11 @@
             else
             {
                 [[ErrorFactory getAlertCustomMessage:@"Sorry there was a problem compressing your video please check you available memory." andDelegateOrNil:nil andOtherButtons:nil]show];
+                NSError *error;
+                [[NSFileManager defaultManager]removeItemAtURL:self.listing.videoURL error:&error];
+                [delegate hideLoader];
+                [Flurry logEvent:@"AddAppartmentViewController - compress video failed"];
+                
             }
         }];
     }
@@ -832,32 +841,50 @@
     
     [PFCloud callFunctionInBackground:@"saveListing" withParameters:[self.listing toDictionary] block:^(id object, NSError *error)
     {
-        switch ([[object valueForKey:@"code"] intValue]) {
-            case kSaveFailed:
-                [[ErrorFactory getAlertForType:kListingSavingError andDelegateOrNil:nil andOtherButtons:nil] show];
-                break;
-            case kSaveSuccess:
-                 
-                self.listing.objectId = [[object valueForKey:@"data"] valueForKey:@"objectId"];
-                [self.listing saveMedia:^(BOOL success) {
-                    if( success )
-                    {
-                        [blockself handleListingComplete];
-                        [delegate hideLoader];
-                        [[ErrorFactory getAlertForType:kListingPendingError andDelegateOrNil:nil andOtherButtons:nil] show];
-                    }
-                    else
-                    {
-                        [[ErrorFactory getAlertForType:kListingMediaError andDelegateOrNil:nil andOtherButtons:nil] show];
-                        [delegate hideLoader];
-                    }
-                }];
-                 
-                break;
-            case kListingExist:
-                [[ErrorFactory getAlertForType:kListingExistsError andDelegateOrNil:Nil andOtherButtons:nil]show];
-                [delegate hideLoader];
-                break;
+        if( object )
+        {
+            switch ([[object valueForKey:@"code"] intValue]) {
+                case kSaveFailed:
+                    [[NSFileManager defaultManager]removeItemAtURL:self.listing.videoURL error:&error];
+                    [[ErrorFactory getAlertForType:kListingSavingError andDelegateOrNil:nil andOtherButtons:nil] show];
+                    [delegate hideLoader];
+                    [Flurry logEvent:@"AddAppartmentViewController - failed to save"];
+                    
+                    break;
+                case kSaveSuccess:
+                    
+                    self.listing.objectId = [[object valueForKey:@"data"] valueForKey:@"objectId"];
+                    
+                    [self.listing saveMedia:^(BOOL success) {
+                        if( success )
+                        {
+                            [blockself handleListingComplete];
+                            [delegate hideLoader];
+                            [[ErrorFactory getAlertForType:kListingPendingError andDelegateOrNil:nil andOtherButtons:nil] show];
+                        }
+                        else
+                        {
+                            [[ErrorFactory getAlertForType:kListingMediaError andDelegateOrNil:nil andOtherButtons:nil] show];
+                            [delegate hideLoader];
+                        }
+                    }];
+                    
+                    break;
+                case kListingExist:
+                    [[NSFileManager defaultManager]removeItemAtURL:self.listing.videoURL error:nil];
+                    [[ErrorFactory getAlertForType:kListingExistsError andDelegateOrNil:Nil andOtherButtons:nil]show];
+                    [delegate hideLoader];
+                    [self handleListingComplete];
+                    [Flurry logEvent:@"AddAppartmentViewController - listing exists"];
+                    break;
+            }
+    
+        }
+        else
+        {
+            [delegate hideLoader];
+            [[ErrorFactory getAlertForType:kListingSavingError andDelegateOrNil:nil andOtherButtons:nil] show];
+            [Flurry logEvent:@"AddAppartmentViewController - failed to save"];
         }
     }];
 }
@@ -939,6 +966,8 @@
 
 -(void)handleListingComplete
 {
+    [Flurry logEvent:@"AddAppartmentViewController - listing complete"];
+    
     NSError *error;
     [[NSFileManager defaultManager]removeItemAtURL:self.listing.videoURL error:&error];
     
@@ -956,8 +985,7 @@
     NSURL   *saveURL;
     NSString *fileName;
     NSArray *comps;
-
-    
+   
    // __block AppDelegate *app = (AppDelegate *)[UIApplication sharedApplication].delegate;
     
     switch (self.currentField)
@@ -969,15 +997,25 @@
             break;
         case kVideo:
         {
-            self.listing.videoName  = self.listing.address;
-            mediaURL = [info valueForKey:UIImagePickerControllerMediaURL];
-            comps    = [mediaURL.absoluteString componentsSeparatedByString:@"/"];
-            fileName = [[comps objectAtIndex:comps.count -1] stringByReplacingOccurrencesOfString:@"trim." withString:@""];
             mediaURL = [info valueForKey:UIImagePickerControllerMediaURL] ;
-            saveURL  = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", [Utils getDocsDirectory], fileName]];
-            self.listing.localVideoURL = saveURL;
-            self.listing.localAssetPath = mediaURL;
-            self.listing.videoFrame = [Utils getImagefromVideoURL:[info valueForKey:UIImagePickerControllerMediaURL]];
+            NSNumber *dur = [Utils getDurationOfMedia:mediaURL];
+            
+            if( [dur intValue] > 60 )
+            {
+                [[ErrorFactory getAlertCustomMessage:@"The video you have choosen is over 1 minute in length, please choose a video under 61 seconds long." andDelegateOrNil:nil andOtherButtons:nil] show];
+            }
+            else
+            {
+                self.listing.videoName  = self.listing.address;
+                mediaURL = [info valueForKey:UIImagePickerControllerMediaURL];
+                comps    = [mediaURL.absoluteString componentsSeparatedByString:@"/"];
+                fileName = [[comps objectAtIndex:comps.count -1] stringByReplacingOccurrencesOfString:@"trim." withString:@""];
+                saveURL  = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", [Utils getDocsDirectory], fileName]];
+                self.listing.localVideoURL = saveURL;
+                self.listing.localAssetPath = mediaURL;
+                self.listing.videoFrame = [Utils getImagefromVideoURL:[info valueForKey:UIImagePickerControllerMediaURL]];
+                
+            }
             
             break;
         }

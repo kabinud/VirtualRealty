@@ -16,4 +16,6 @@
     #import <MobileCoreServices/MobileCoreServices.h>
     #import "Constants.h"
     #import "Utils.h"
+    #import "Flurry.h"
+
 #endif

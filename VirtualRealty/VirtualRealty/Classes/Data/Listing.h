@@ -30,6 +30,8 @@ typedef void (^UpdateListingBlock) (BOOL success);
 -(void)saveMedia:( SaveMediaBlock )block;
 -(void)update:(UpdateListingBlock)block;
 
+-(BOOL)userEditing;
+
 -(void)compressVideo:( void (^) (BOOL success) ) block;
 @property(nonatomic, strong, readonly)NSMutableArray *errors;
 
@@ -78,7 +80,7 @@ typedef void (^UpdateListingBlock) (BOOL success);
 
 
 // extended properties
-@property(nonatomic, strong)NSNumber *zip;
+@property(nonatomic, strong)NSString *zip;
 @property(nonatomic, strong)NSString *street;
 @property(nonatomic, strong)NSString *city;
 @property(nonatomic, strong)NSString *state;

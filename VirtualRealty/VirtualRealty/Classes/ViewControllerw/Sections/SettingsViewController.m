@@ -84,6 +84,7 @@
                 [[ReachabilityManager sharedManager]showAlert];
                 cell.formValue = [User sharedUser].activelySearching;
                 [cell render];
+                [Flurry logEvent:@"SettingsViewController - change actively looking"];
             }
             else
             {
@@ -103,6 +104,7 @@
             
         case kSearchRadius:
             [User sharedUser].searchRadius = cell.formValue;
+            [Flurry logEvent:@"SettingsViewController - user change search radius"];
             break;
         default:
             
@@ -205,6 +207,7 @@
         switch ([[info valueForKey:@"field"] intValue ] )
         {
             case kUser:
+                
                 [self toggleLogin];
                 break;
             default:
@@ -289,6 +292,8 @@
     {
         AppDelegate *app = (AppDelegate *)[UIApplication sharedApplication].delegate;
         [app showlogin];
+        [Flurry logEvent:@"SettingsViewController - toggleLogin"];
+        
     }
 }
 
@@ -298,6 +303,7 @@
     {
         case 1:
             [[User sharedUser]logout];
+            [Flurry logEvent:@"SettingsViewController - user logged out"];
         break;
     }
     [self.table reloadData];

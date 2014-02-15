@@ -208,9 +208,13 @@
 
 -(void)initThirdPartySDKs
 {
-    NSLog(@"%@ -- %@ , %@ ", self, PARSE_KEY, PARSE_CLIENT);
     [GMSServices provideAPIKey:@"AIzaSyB10cTpRT6lqVuDQBR5cO-6xZbsTPp7dEs"];
     [Parse setApplicationId:PARSE_KEY clientKey:PARSE_CLIENT];
+    
+    if( [Utils getCurrentBuildEnvironment] == kRelease )
+    {
+        [Flurry startSession:FLURRY];
+    }
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application{}

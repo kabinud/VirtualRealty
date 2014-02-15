@@ -54,6 +54,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [Flurry logEvent:@"EditListingViewController - viewDidLoad" ];
     self.navigationItem.title = @"edit";
     
     self.view.backgroundColor = [UIColor grayColor];
@@ -72,6 +74,7 @@
     [_table setSectionFooterHeight:0.0f];
     [_table setSectionHeaderHeight:44.0f];
     [self.view addSubview:_table];
+    _currentIndexpath = nil;
 }
 
 
@@ -141,6 +144,11 @@
         _currentField      = [[cell.cellinfo valueForKey:@"field"]intValue];
         _currentIndexpath  = indexPath;
     }
+    else
+    {
+        _currentField = -1;
+        _currentIndexpath = nil;
+    }
     
     switch (self.currentField)
     {
@@ -154,7 +162,7 @@
         case kMonthlyRent:
         case kMoveInCost:
         case kBrokerFee:
-            [cell setFocus];
+            [cell setFocus];\
             break;
         default:
             [[PickerManager sharedManager]hidePicker];
@@ -369,6 +377,9 @@
     }
     __block EditListingViewController *blockself = self;
     
+    [Flurry logEvent:@"EditListingViewController - handlePlayVideo" ];
+    
+    
     [self.listing loadVideo:^(BOOL success) {
         if( success )
         {
@@ -407,6 +418,8 @@
         __block EditListingViewController *blockself = self;
         __block AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
         [delegate showLoaderInView:self.view];
+        [Flurry logEvent:@"EditListingViewController - handleSaveListing" ];
+        
         
         [self.listing update:^(BOOL success)
         {
@@ -439,6 +452,9 @@
 {
     __block EditListingViewController *blockself = self;
     NSDictionary *params = @{@"objectId":self.listing.objectId};
+    
+    [Flurry logEvent:@"EditListingViewController - deleteObject" ];
+    
     [PFCloud callFunctionInBackground:@"deleteListing" withParameters:params block:^(id object, NSError *error)
     {
          if( [object intValue ] == 1 )

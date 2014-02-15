@@ -245,9 +245,9 @@
 							<key>comp-index</key>
 							<integer>1</integer>
 							<key>label</key>
-							<string>Strivers' Row</string>
+							<string>Strivers&apos; Row</string>
 							<key>value</key>
-							<string>Strivers' Row</string>
+							<string>Strivers&apos; Row</string>
 						</dict>
 						<dict>
 							<key>comp-index</key>
@@ -437,9 +437,9 @@
 							<key>comp-index</key>
 							<integer>2</integer>
 							<key>label</key>
-							<string>Hell's Kitchen</string>
+							<string>Hell&apos;s Kitchen</string>
 							<key>value</key>
-							<string>Hell's Kitchen</string>
+							<string>Hell&apos;s Kitchen</string>
 						</dict>
 						<dict>
 							<key>comp-index</key>
@@ -1056,6 +1056,8 @@
 				<integer>1</integer>
 			</dict>
 			<dict>
+				<key>max-chars</key>
+				<integer>5</integer>
 				<key>animatable</key>
 				<false/>
 				<key>class</key>

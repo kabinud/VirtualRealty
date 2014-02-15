@@ -107,7 +107,7 @@ Parse.Cloud.define("saveListing", function(request, response)
 		listing.set( "neighborhood", this.neighborhood );
 		listing.set( "city", this.city );
 		listing.set( "state", this.state  );
-		listing.set( "zip", this.zip );
+		listing.set( "zip", this.zip.toString() );
 		
         listing.save( null, {
   			success: function(listing) {

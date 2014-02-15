@@ -57,6 +57,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [Flurry logEvent:@"UserContentVieController - viewDidLoad" ];
  
     self.view.backgroundColor = [UIColor colorFromHex:@"cbd5d9"];
     
@@ -83,7 +84,6 @@
 
 -(void)handleRefresh:(id)sender
 {
-
     __block UserContentViewController *blockself = self;
     [PFCloud callFunctionInBackground:@"getListingsForUser" withParameters:@{@"userID":[User sharedUser].uid} block:^(id object, NSError *error)
     {
@@ -244,6 +244,8 @@
 {
     NSArray *group = [self.tableData objectAtIndex:indexPath.section];
    
+    [Flurry logEvent:@"UserContentVieController - showListingDetails" ];
+    
     _listing = [group objectAtIndex:indexPath.row];
     
     [self.table deselectRowAtIndexPath:indexPath animated:YES];
