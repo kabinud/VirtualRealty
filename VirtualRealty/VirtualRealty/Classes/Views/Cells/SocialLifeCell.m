@@ -10,6 +10,12 @@
 #import <CoreLocation/CoreLocation.h>
 #import "ErrorFactory.h"
 
+@interface SocialLifeCell()
+{
+    NSURLSessionDataTask *task;
+}
+
+@end
 @implementation SocialLifeCell
 
 -(void)render
@@ -38,11 +44,12 @@
     CLLocationDegrees log  = _location.coordinate.longitude;
     GMSCameraPosition *camera = [GMSCameraPosition cameraWithLatitude:lat longitude:log zoom:12];
     [self.mapView setCamera:camera];
-     NSString *template = @"https://maps.googleapis.com/maps/api/place/search/json?location=%f,%f&radius=%@&types=%@&sensor=true&key=%@";
+    
+    NSString *template = @"https://maps.googleapis.com/maps/api/place/search/json?location=%f,%f&radius=%@&types=%@&sensor=true&key=%@";
     NSString *url = [NSString stringWithFormat:template, _location.coordinate.latitude, _location.coordinate.longitude,@"200", @"restaurant%7cbar%7csubway_station%7cgrocery_or_supermarket", kGOOGLE_PLACES_KEY];
     NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
+    [req setCachePolicy:NSURLCacheStorageNotAllowed];
     
-    NSURLSessionDataTask *task;
     NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
     task = [session dataTaskWithRequest:req completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         if( error )
@@ -58,6 +65,10 @@
     [task resume];
 }
 
+-(void)prepareForReuse
+{
+    [task cancel];
+}
 
 -(void)handleDataLoaded:(NSData *)data
 {
@@ -137,8 +148,12 @@
 
 -(BOOL)mapView:(GMSMapView *)mapView didTapMarker:(GMSMarker *)marker
 {
-    NSLog(@"%@ --- did tap %@ ", self, marker.userData);
     return YES;
+}
+
+-(void)dealloc
+{
+
 }
 
 @end

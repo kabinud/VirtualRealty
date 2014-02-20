@@ -34,7 +34,7 @@
     {
         [self.stateView setState:[self.listing.listingState intValue]];
         CGRect rect = self.stateView.frame;
-        rect.origin.y = self.thumb.frame.size.height - rect.size.height;
+        rect.origin.x = 320 - self.stateView.frame.size.width;
         self.stateView.frame = rect;
     }
 

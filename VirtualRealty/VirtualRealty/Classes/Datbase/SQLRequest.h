@@ -29,6 +29,7 @@ typedef void (^SQLRequestCompleteBlock) (BOOL success);
 -(void)runUpdateOnDatabaseManager:(SQLiteManager *)manager WithBlock:(SQLRequestCompleteBlock )block;
 -(void)runDeleteOnDatabaseManager:(SQLiteManager *)manager WithBlock:(SQLRequestCompleteBlock )block;
 
+-(void)destroy;
 -(void)queryThreadComplete;
 -(void)setErrorMessage:(NSString *)errorMessage;
 

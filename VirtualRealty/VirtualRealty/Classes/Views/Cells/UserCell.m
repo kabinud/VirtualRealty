@@ -21,7 +21,7 @@
 {
     [super layoutSubviews];
  
-    self.detailTextLabel.adjustsFontSizeToFitWidth = YES;
+    
     self.textLabel.font =  [UIFont fontWithName:@"MuseoSans-500" size:16];
     [self.textLabel sizeToFit];
     
@@ -33,13 +33,18 @@
     
     [self.detailTextLabel setFont:[UIFont fontWithName:@"MuseoSans-500" size:16]];
     [self.detailTextLabel setTextAlignment:NSTextAlignmentLeft];
-    [self.detailTextLabel sizeToFit];
     [self.detailTextLabel setTextColor:[UIColor colorFromHex:@"00aeef"]];
+    self.detailTextLabel.adjustsFontSizeToFitWidth = YES;
     
     rect = self.detailTextLabel.frame;
-    rect.origin.x = self.contentView.frame.size.width - (self.detailTextLabel.frame.size.width + 10);
+    
+    float width = 300 - ( self.textLabel.frame.origin.x + self.textLabel.frame.size.width);
+    rect.origin.x = self.contentView.frame.size.width - (width + 10);
     rect.origin.y = self.contentView.frame.size.height * 0.5 - rect.size.height * 0.5;
+    rect.size.width = width;
+    self.detailTextLabel.textAlignment = NSTextAlignmentRight;
     self.detailTextLabel.frame = rect;
+    
 }
 
 -(void)render

@@ -178,11 +178,13 @@
 
 + (void)convertVideoToLowQualityWithInputURL:(NSURL*)inputURL outputURL:(NSURL*)outputURL successHandler:(void (^)())successHandler failureHandler:(void (^)(NSError *))failureHandler
 {
+    
+    
     AVURLAsset *asset = [AVURLAsset URLAssetWithURL:inputURL options:nil];
     __block AVAssetExportSession *exportSession = [[AVAssetExportSession alloc] initWithAsset:asset presetName:AVAssetExportPresetLowQuality];
     exportSession.outputURL = outputURL;
     exportSession.outputFileType = AVFileTypeQuickTimeMovie;
- 
+
     [exportSession exportAsynchronouslyWithCompletionHandler:^(void)
     {
         if (exportSession.status == AVAssetExportSessionStatusCompleted)
@@ -191,7 +193,8 @@
         }
         else
         {
-             failureHandler(nil);
+            NSLog(@"%@ --- found error with export %@ ", @"<Utils>" , exportSession.error );
+            failureHandler(nil);
         }
     }];
 }

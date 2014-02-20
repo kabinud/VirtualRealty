@@ -11,7 +11,9 @@
 #import "PriceView.h"
 #import "ListingStateView.h"
 @interface ListingCell : AbstractCell
-
+{
+    int tagPos;
+}
 @property(nonatomic, strong)Listing *listing;
 @property(nonatomic, strong, readonly)UIImageView *thumb;
 @property(nonatomic, strong, readonly)PriceView   *priceView;
@@ -22,5 +24,6 @@
 @property(nonatomic, strong, readonly)UIActivityIndicatorView     *spinner;
 
 -(void)showCloseWithTarget:(id)target andSEL:( SEL )selector;
+-(void)setTagPosition:(int)pos;
 
 @end

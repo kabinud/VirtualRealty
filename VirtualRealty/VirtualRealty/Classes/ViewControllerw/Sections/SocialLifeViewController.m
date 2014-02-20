@@ -7,8 +7,6 @@
 //
 
 #import "SocialLifeViewController.h"
-#import "JSONService.h"
-#import "AFHTTPClient.h"
 #import "ErrorFactory.h"
 @interface SocialLifeViewController ()<GMSMapViewDelegate>
 {

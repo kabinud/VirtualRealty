@@ -162,7 +162,7 @@
         case kMonthlyRent:
         case kMoveInCost:
         case kBrokerFee:
-            [cell setFocus];\
+            [cell setFocus];
             break;
         default:
             [[PickerManager sharedManager]hidePicker];
@@ -171,7 +171,10 @@
             if( cell.cellinfo[@"custom-action"] )
             {
                 NSString *selecorName =cell.cellinfo[@"custom-action"];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
                 [self performSelector:NSSelectorFromString(selecorName)withObject:nil ];
+#pragma clang diagnostic pop
             }
             break;
     }

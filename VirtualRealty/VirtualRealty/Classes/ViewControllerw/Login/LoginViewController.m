@@ -298,7 +298,11 @@
     if( [cell.cellinfo valueForKey:@"custom-action"] )
     {
         SEL sel = NSSelectorFromString([cell.cellinfo valueForKey:@"custom-action"]);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+
         [self performSelector:sel];
+        #pragma clang diagnostic pop
     }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }

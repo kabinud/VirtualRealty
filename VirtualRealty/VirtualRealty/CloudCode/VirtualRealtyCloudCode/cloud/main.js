@@ -54,15 +54,13 @@ Parse.Cloud.define("saveListing", function(request, response)
     {
         if( obj != null && obj.length > 0 )
         {
-            response.error(  { "code": 0, "data":obj } );
+            response.success( { "code":0,  "message" : "Not able to save duplicate listing"} );
         }
         else
         {
             save();
         }
     }
-	
-	
                    
     function save()
     {
@@ -105,7 +103,7 @@ Parse.Cloud.define("saveListing", function(request, response)
 		listing.set( "borough", this.borough );
 		listing.set( "street", this.street );
 		listing.set( "neighborhood", this.neighborhood );
-		listing.set( "city", this.city );
+		listing.set( "city", this.city );	
 		listing.set( "state", this.state  );
 		listing.set( "zip", this.zip.toString() );
 		

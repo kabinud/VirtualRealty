@@ -29,7 +29,7 @@
 #define PARSE_CLIENT @"A5Fo3tdmadYS6CWcq7LdpIuisHjCv63C5QSau7ii"
 #endif
 
-#define FLURRY @"NG25YR5ZVVCQ25G3SJ78"
+#define FLURRYKEY @"NG25YR5ZVVCQ25G3SJ78"
 
 #pragma mark - Build device
 typedef enum DeviceType

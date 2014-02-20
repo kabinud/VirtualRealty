@@ -505,14 +505,14 @@
     }
     
     cell.listing = info;
+    [cell setTagPosition:indexPath.row % 2];
     [cell render];
-    
     return cell;
 }
 
 -(float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 215.0f;
+    return 150.0f;
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -673,7 +673,7 @@
     
     ListingCell *cell = [[ListingCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@""];
     
-    cell.frame = CGRectMake(0, 0, 320, 215);
+    cell.frame = CGRectMake(0, 0, 320, 150);
     cell.listing = listing;
     [cell render];
     [cell layoutSubviews];
@@ -776,6 +776,11 @@
     ListingCell *cell = (ListingCell *)sender.view;
     self.tap.enabled = YES;
     [self showDetails:cell.listing];
+}
+
+-(void)dealloc
+{
+    NSLog(@"%@ dealloc called ", self);
 }
 
 @end

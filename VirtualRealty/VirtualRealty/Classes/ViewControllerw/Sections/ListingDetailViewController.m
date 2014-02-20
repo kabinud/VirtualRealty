@@ -24,7 +24,9 @@
 #import "ReachabilityManager.h"
 
 @interface ListingDetailViewController ()<UIAlertViewDelegate, MFMailComposeViewControllerDelegate>
-
+{
+    SQLRequest *req;
+}
 -(void)deleteObject;
 -(void)handleDeleteListing:(id)sender;
 -(void)enableFavoriteButton:(NSArray *)results;
@@ -58,6 +60,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    
     [Flurry logEvent:@"ListingDetailViewController - viewDidLoad"];
     self.view.backgroundColor = [UIColor grayColor];
     self.navigationItem.title = @"Listing";
@@ -90,19 +94,29 @@
         }
         else
         {
+            
             __block ListingDetailViewController *blockself = self;
              
             NSString   *sql = [QueryFactory getListing:self.listing andUser:[User sharedUser]];
-            __block SQLRequest *req = [[SQLRequest alloc]initWithQuery:sql andType:kSelect andName:@"select-favorite"];
+            req = [[SQLRequest alloc]initWithQuery:sql andType:kSelect andName:@"select-favorite"];
+            
+            __block SQLRequest *weakReq = req;
             
             [req runSelectOnDatabaseManager:[SQLiteManager sharedDatabase] WithBlock:^(BOOL success) {
                 if( success  )
                 {
-                    [blockself enableFavoriteButton:[req.results copy]];
+                    [blockself enableFavoriteButton:[weakReq.results copy]];
                 }
+                [weakReq destroy];
             }];
         }
     }
+}
+
+-(void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    req.completeBlock = nil;
 }
 
 -(void)enableFavoriteButton:(NSArray *)results
@@ -192,7 +206,10 @@
     NSString *customAction = [cell.cellinfo valueForKey:@"custom-action"];
     if( customAction )
     {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
         [self performSelector:NSSelectorFromString(customAction)];
+#pragma clang diagnostic pop
     }
 }
 
@@ -295,7 +312,13 @@
 {
     __block ListingDetailViewController *blockself = self;
     NSString *sql = [QueryFactory getSaveListingQuery:self.listing];
-    SQLRequest *req = [[SQLRequest alloc]initWithQuery:sql andType:kSelect andName:@"save-favorite"];
+    
+    if( req )
+    {
+        [req destroy];
+    }
+    
+    req = [[SQLRequest alloc]initWithQuery:sql andType:kSelect andName:@"save-favorite"];
     [req runInsertOnDatabaseManager:[SQLiteManager sharedDatabase] WithBlock:^(BOOL success)
     {
         if( success  )
@@ -339,7 +362,14 @@
     __block ListingDetailViewController *blockself = self;
     
     NSString   *sql = [QueryFactory getDeleteListingQuery:self.listing];
-    SQLRequest *req = [[SQLRequest alloc]initWithQuery:sql andType:kSelect andName:@"delete-favorite"];
+    
+    if( req )
+    {
+        [req destroy];
+    }
+    
+    req = [[SQLRequest alloc]initWithQuery:sql andType:kSelect andName:@"delete-favorite"];
+    
     
     [req runDeleteOnDatabaseManager:[SQLiteManager sharedDatabase] WithBlock:^(BOOL success)
     {
@@ -501,5 +531,9 @@
     }
 }
 
+-(void)dealloc
+{
+    NSLog(@"%@ dealloc called ", self);
+}
 
 @end

@@ -99,6 +99,11 @@
     self.completeBlock(YES);
 }
 
+-(void)destroy
+{
+    self.completeBlock = nil;
+}
+
 -(void)setErrorMessage:(NSString *)errorMessage
 {
     _errorMessage = errorMessage;

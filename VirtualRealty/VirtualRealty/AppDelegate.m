@@ -73,8 +73,6 @@
     [Utils printFontFamilies];
     
     [self.window makeKeyAndVisible];
-
-    DatePickerSource *source = [[DatePickerSource alloc]init];
     return YES;
 }
 
@@ -213,7 +211,8 @@
     
     if( [Utils getCurrentBuildEnvironment] == kRelease )
     {
-        [Flurry startSession:FLURRY];
+        [Flurry setCrashReportingEnabled:YES];
+        [Flurry startSession:FLURRYKEY];
     }
 }
 

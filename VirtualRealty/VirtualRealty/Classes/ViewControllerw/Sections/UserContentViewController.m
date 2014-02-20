@@ -98,15 +98,16 @@
     }];
     
     NSString *query = [QueryFactory getFavoritesForUser:[User sharedUser]];
-    __block SQLRequest *req = [[SQLRequest alloc]initWithQuery:query andType:kSelect andName:@"get-favorites"];
+    SQLRequest *req = [[SQLRequest alloc]initWithQuery:query andType:kSelect andName:@"get-favorites"];
     
+    __block SQLRequest *weak = req;
     [req runSelectOnDatabaseManager:[SQLiteManager sharedDatabase] WithBlock:^(BOOL success) {
         if( success )
         {
             NSMutableArray *favs = [blockself.tableData objectAtIndex:1];
             [favs removeAllObjects];
             
-            for( NSDictionary *info in req.results )
+            for( NSDictionary *info in weak.results )
             {
                 Listing *listing = [[Listing alloc]initWithSQLData:info];
                 [favs addObject:listing];
@@ -237,7 +238,7 @@
 
 -(float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 215.0f;
+    return 150.0f;
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath

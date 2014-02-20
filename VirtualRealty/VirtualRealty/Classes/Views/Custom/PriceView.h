@@ -9,6 +9,6 @@
 #import <UIKit/UIKit.h>
 
 @interface PriceView : UIView
--(void)setPrice:(float)value;
+-(void)setPrice:(float)value andPosition:(int)pos;
 
 @end

@@ -36,6 +36,7 @@
 -(void)handleSubmitListing:(id)sender;
 -(void)handleCaptureMedia;
 -(void)showKeywords;
+-(void)handleDuplicateListing;
 
 @end
 
@@ -762,11 +763,12 @@
     {
         if( self.listing.geo == nil )
         {
-            
-            __block LocationManager *locationManager = [LocationManager shareManager];
+        
             NSString *addressString = [NSString stringWithFormat:@"%@ %@, %@, %i", self.listing.street, self.listing.borough, self.listing.state, [self.listing.zip intValue]];
-            [[LocationManager shareManager]setCurrentLocationByString:addressString block:^(CLLocationCoordinate2D loc) {
-                if( [locationManager.addressInfo[@"State"] isEqualToString:@"NJ"] || [locationManager.addressInfo[@"State"] isEqualToString:@"NY"] )
+           
+            [[LocationManager shareManager]setCurrentLocationByString:addressString block:^(CLLocationCoordinate2D loc)
+            {
+                if(  CLLocationCoordinate2DIsValid(loc) )
                 {
                     blockself.listing.geo = [[CLLocation alloc]initWithLatitude:loc.latitude longitude:loc.longitude];
                     [blockself saveListing];
@@ -778,6 +780,7 @@
                     
                 }
             }];
+            
         }
         else
         {
@@ -845,11 +848,9 @@
         {
             switch ([[object valueForKey:@"code"] intValue]) {
                 case kSaveFailed:
-                    [[NSFileManager defaultManager]removeItemAtURL:self.listing.videoURL error:&error];
                     [[ErrorFactory getAlertForType:kListingSavingError andDelegateOrNil:nil andOtherButtons:nil] show];
                     [delegate hideLoader];
                     [Flurry logEvent:@"AddAppartmentViewController - failed to save"];
-                    
                     break;
                 case kSaveSuccess:
                     
@@ -866,15 +867,15 @@
                         {
                             [[ErrorFactory getAlertForType:kListingMediaError andDelegateOrNil:nil andOtherButtons:nil] show];
                             [delegate hideLoader];
+                            [[NSFileManager defaultManager]removeItemAtURL:blockself.listing.videoURL error:nil];
                         }
                     }];
                     
                     break;
                 case kListingExist:
-                    [[NSFileManager defaultManager]removeItemAtURL:self.listing.videoURL error:nil];
                     [[ErrorFactory getAlertForType:kListingExistsError andDelegateOrNil:Nil andOtherButtons:nil]show];
                     [delegate hideLoader];
-                    [self handleListingComplete];
+                    [self handleDuplicateListing];
                     [Flurry logEvent:@"AddAppartmentViewController - listing exists"];
                     break;
             }
@@ -887,6 +888,12 @@
             [Flurry logEvent:@"AddAppartmentViewController - failed to save"];
         }
     }];
+}
+
+-(void)handleDuplicateListing
+{
+    self.listing.unit = nil;
+    [self.table reloadData];
 }
 
 -(void)handleCaptureMedia
@@ -986,8 +993,6 @@
     NSString *fileName;
     NSArray *comps;
    
-   // __block AppDelegate *app = (AppDelegate *)[UIApplication sharedApplication].delegate;
-    
     switch (self.currentField)
     {
         case kThumbnail:
@@ -1007,14 +1012,15 @@
             else
             {
                 self.listing.videoName  = self.listing.address;
+               
                 mediaURL = [info valueForKey:UIImagePickerControllerMediaURL];
                 comps    = [mediaURL.absoluteString componentsSeparatedByString:@"/"];
                 fileName = [[comps objectAtIndex:comps.count -1] stringByReplacingOccurrencesOfString:@"trim." withString:@""];
                 saveURL  = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", [Utils getDocsDirectory], fileName]];
-                self.listing.localVideoURL = saveURL;
+             
+                self.listing.localVideoURL  = saveURL;
                 self.listing.localAssetPath = mediaURL;
-                self.listing.videoFrame = [Utils getImagefromVideoURL:[info valueForKey:UIImagePickerControllerMediaURL]];
-                
+                self.listing.videoFrame     = [Utils getImagefromVideoURL:[info valueForKey:UIImagePickerControllerMediaURL]];
             }
             
             break;
@@ -1070,7 +1076,9 @@
 
 -(void)dealloc
 {
-    NSLog(@"%@ deallocated ", [self class] );
+    NSError *error;
+    [[NSFileManager defaultManager]removeItemAtURL:self.listing.videoURL error:&error];
+    NSLog(@"%@ dealloc called " ,self );
 }
 
 @end

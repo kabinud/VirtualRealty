@@ -201,7 +201,6 @@
         case 0:
         {
             int selectedYear  = [self.dataSource.source[0][row][@"value"] intValue];
-            NSDictionary *year  = self.dataSource.source[0][row];
             int month = [self.dataSource.source[1][[self.picker selectedRowInComponent:1]][@"value"] intValue];
             [self.dataSource.source replaceObjectAtIndex:2 withObject:[self.dataSource getDaysFormMonth:month inYear:selectedYear]];
             [self.picker reloadComponent:2];
@@ -213,7 +212,6 @@
         case 1:
         {
             int selectedMonth = [self.dataSource.source[1][row][@"value"] intValue];
-            NSDictionary *month = self.dataSource.source[1][row];
             int year = [self.dataSource.source[0][[self.picker selectedRowInComponent:0]][@"value"] intValue];
             [self.dataSource.source replaceObjectAtIndex:2 withObject:[self.dataSource getDaysFormMonth:selectedMonth inYear:year]];
             [self.picker reloadComponent:2];

@@ -39,4 +39,7 @@
 +(NSNumber *)getDurationOfMedia:(NSURL *)url;
 +(void)printFontFamilies;
 +(UIImage *)copyImage:(UIImage *)img ToSize:(CGSize)size;
+
+
+
 @end

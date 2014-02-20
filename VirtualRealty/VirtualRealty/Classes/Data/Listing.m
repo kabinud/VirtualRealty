@@ -324,24 +324,38 @@
 {
     __block Listing *blockself = self;
     
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-        
-        [Utils convertVideoToLowQualityWithInputURL:self.localAssetPath  outputURL:self.localVideoURL successHandler:^
-        {
-            blockself.video = [NSData dataWithContentsOfURL:self.localVideoURL];
+    if( [[NSFileManager defaultManager]fileExistsAtPath:[self.localVideoURL absoluteString]] )
+    {
+        block(YES);
+    }
+    else
+    {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
             
-            dispatch_async(dispatch_get_main_queue(), ^{
-                block(YES);
-            });
-        
-        }
-        failureHandler:^(NSError *errer )
-        {
-             dispatch_async(dispatch_get_main_queue(), ^{
-                 block(NO);
-             });
-         }];
-    });
+            [Utils convertVideoToLowQualityWithInputURL:self.localAssetPath  outputURL:self.localVideoURL successHandler:^
+            {
+                blockself.video = [NSData dataWithContentsOfURL:self.localVideoURL];
+             
+                BOOL success = [[NSFileManager defaultManager]createFileAtPath:blockself.localVideoURL.absoluteString contents:blockself.video attributes:nil];
+                
+                if( !success )
+                {
+                    NSLog(@"%@, could not create file at path , %@ ", self, blockself.localVideoURL.absoluteString);
+                }
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    block(YES);
+                });
+                 
+            }
+            failureHandler:^(NSError *errer )
+            {
+                 dispatch_async(dispatch_get_main_queue(), ^{
+                     block(NO);
+                 });
+            }];
+        });
+    }
 }
 
 -(void)saveVideo

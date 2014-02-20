@@ -66,8 +66,8 @@
 -(void)prepareForReuse
 {
     [super prepareForReuse];
+    self.listing.loadCompleteBlock = nil;
     self.thumb.image = nil;
-    
 }
 
 -(void)layoutSubviews
@@ -75,7 +75,6 @@
     [super layoutSubviews];
     CGRect rect = self.priceView.frame;
     rect.origin.x = self.contentView.frame.size.width - self.priceView.frame.size.width;
-    rect.origin.y = self.thumb.frame.size.height - rect.size.height;
     self.priceView.frame = rect;
     
     self.addressLabel.frame = CGRectMake(5, self.thumb.frame.size.height + 9, 320, 0);
@@ -101,27 +100,43 @@
     NSString *borough = ( self.listing.borough == nil ) ? self.listing.city : self.listing.borough;
     self.addressLabel.text = [NSString stringWithFormat:@"%@, %@ %@",self.listing.street, borough, [NSString stringWithFormat:@"%i",[self.listing.zip intValue]]];
     
-    NSString *detailsText = [NSString stringWithFormat:@"%@, %@ in %@", self.listing.bedrooms, self.listing.bathrooms, self.listing.neighborhood];
+    NSString *detailsFormat = (self.listing.neighborhood) ? @"%@, %@ in %@" : @"%@, %@";
+    NSString *detailsText   = nil;
+    
+    if( self.listing.neighborhood )
+    {
+        detailsText = [NSString stringWithFormat:detailsFormat, self.listing.bedrooms, self.listing.bathrooms, self.listing.neighborhood];
+    }
+    else
+    {
+        detailsText = [NSString stringWithFormat:detailsFormat, self.listing.bedrooms, self.listing.bathrooms ];
+    }
+    
     self.listingDetailsLabel.text = detailsText;
     
-    [self.priceView setPrice:[self.listing.monthlyCost floatValue]];
+    [self.priceView setPrice:[self.listing.monthlyCost floatValue]andPosition:1];
     
     if( self.listing.thumb == nil )
     {
         [self.listing loadThumb:^(BOOL success)
-         {
-             CGSize size  = blockself.listing.thumb.size;
-             UIImage *img = [Utils resizeImage:blockself.listing.thumb toSize:CGSizeMake(size.width * 0.3, size.height * 0.3)];
-             blockself.thumb.image = img;
-         }];
+        {
+            UIImage *img = blockself.listing.thumb;
+            blockself.thumb.image = img;
+            blockself.listing.loadCompleteBlock = nil;
+        }];
+        
     }
     else
     {
-        CGSize size  = blockself.listing.thumb.size;
-        UIImage *img = [Utils resizeImage:blockself.listing.thumb toSize:CGSizeMake(size.width * 0.3, size.height * 0.3)];
+        UIImage *img = self.listing.thumb;
         self.thumb.image = img;
     }
     self.selectionStyle = UITableViewCellSelectionStyleNone;
+}
+
+-(void) dealloc
+{
+    NSLog(@"%@ dealloc called ", self);
 }
 
 @end

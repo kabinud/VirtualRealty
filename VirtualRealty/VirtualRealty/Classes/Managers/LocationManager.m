@@ -189,8 +189,6 @@
                 break;
         }
     
-    
-        
         __block CLLocationCoordinate2D location;
         location.latitude = [latString doubleValue];// latitude;
         location.longitude = [lngString doubleValue]; //longitude;

@@ -200,7 +200,10 @@
    
     if( [info valueForKey:@"custom-action"] )
     {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
         [self performSelector:NSSelectorFromString([info valueForKey:@"custom-action"])];
+#pragma clang diagnostic pop
     }
     else
     {

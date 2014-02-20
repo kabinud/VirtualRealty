@@ -54,7 +54,7 @@
         case kRented:
             stateName = @"Rented";
             color     = [UIColor colorFromHex:@"00aeef"];
-            wedge     = [UIImage imageNamed:@"rigth-wedge.png"];
+            wedge     = [UIImage imageNamed:@"topRight-wedge.png"];
             break;
             
     }
@@ -65,22 +65,18 @@
     label.text = stateName;
     [label sizeToFit];
     
-    CGRect rect = label.frame;
-    rect.size.width += 10;
+    CGRect rect       = label.frame;
+    rect.origin.x     = imageView.frame.size.width;
+    rect.size.width  += 10;
     rect.size.height += 10;
     bg.frame = rect;
     
     rect = label.frame;
-    rect.origin.x = 5;
+    rect.origin.x = bg.frame.origin.x + 5;
     rect.origin.y = 5;
     label.frame = rect;
     
-    rect = imageView.frame;
-    rect.origin.x = bg.frame.size.width;
-    rect.size.height = bg.frame.size.height;
-    imageView.frame = rect;
-    
-    self.frame = CGRectMake(0, 0, imageView.frame.size.width + imageView.frame.origin.x, bg.frame.size.height);
+    self.frame = CGRectMake(0, 0, imageView.frame.size.width + bg.frame.size.width, bg.frame.size.height);
     
     bg.backgroundColor = color;
 }
